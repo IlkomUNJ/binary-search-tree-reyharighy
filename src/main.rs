@@ -219,7 +219,7 @@ fn test_binary_search_tree_new_assignment() {
                             let main_tree_path = "bst_graph.dot";
                             generate_dotfile_bst(&rootlink, main_tree_path);
             
-                            println!("    - The graph has been written to the file named with {:?}", main_tree_path);
+                            println!("    - The graph has been written to a file named with {:?}", main_tree_path);
                             println!("\n================================================================================================\n");
                             
                             continue;
