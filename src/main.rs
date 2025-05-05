@@ -8,12 +8,458 @@ use crate::structure::bst::BstNodeLink;
 use crate::tool::generate_dotfile;
 use crate::tool::generate_dotfile_bst;
 
+// related to logger
+use env_logger::Builder;
+use std::io;
+use std::io::Write;
+
 fn main() {
     //turn on to test the old code
-    // test_binary_tree();
-    test_binary_search_tree();
+    //test_binary_tree();
+
+    // turn on to test BST module
+    // test_binary_search_tree();
+
+    // turn on to use logger
+    customized_debug();
+
+    // turn on to enter the user interface
+    test_binary_search_tree_new_assignment();
 }
 
+fn test_binary_search_tree_new_assignment() {
+    println!("\n============================== Assignment 4 - Binary Search Tree ===============================\n");
+    println!("    - Instruction: Before starting, please choose one of the following options");
+    println!("      1. Use a defined generated graph");
+    println!("      2. Create the graph from the start");
+    println!("      3. Exit the program");
+
+    let mut value: i32;
+
+    loop {
+        let mut input = String::new();
+
+        io::stdin()
+            .read_line(&mut input)
+            .expect("    - Error: Failed to read input");
+
+        value = match input.trim().parse() {
+            Ok(num) => num,
+            Err(_) => {
+                println!("    - Error: Invalid input, please type a number");
+                continue;
+            },
+        };
+
+        match value {
+            1 => {
+                let rootlink= BstNode::new_bst_nodelink(15);
+                let query_keys = vec![5, 18, 3, 7, 17, 20, 2, 4, 6, 10, 16, 19, 1, 8, 11, 9, 13, 12, 14,25, 24, 23, 22, 21];
+
+                for key in query_keys {
+                    rootlink.borrow_mut().tree_insert(&rootlink, &key);
+                }
+
+                loop {
+                    println!("\n============================================= Menu =============================================\n");
+                    println!("    - Instruction: Please choose one of the following options provided by entering its number\n");
+                    println!("      1. Insert a new node");
+                    println!("      2. Delete a node");
+                    println!("      3. Find the successor of a node");
+                    println!("      4. Find the root node of the tree");
+                    println!("      5. Find the minimum node of the tree");
+                    println!("      6. Find the maximum node of the tree");
+                    println!("      7. Save the current graph");
+                    println!("      8. Exit the program");
+            
+                    let mut input = String::new();
+            
+                    io::stdin()
+                        .read_line(&mut input)
+                        .expect("    - Error: Failed to read input");
+            
+                    value = match input.trim().parse() {
+                        Ok(num) => num,
+                        Err(_) => {
+                            println!("    - Error: Invalid input, please type a number");
+                            continue;
+                        },
+                    };
+            
+                    match value {
+                        1 => {
+                            loop {
+                                println!("\n============================================ Insert ============================================\n");
+                                println!("    - Instruction: Please enter a key value of the new node");
+            
+                                let mut input = String::new();
+            
+                                io::stdin()
+                                    .read_line(&mut input)
+                                    .expect("    - Error: Failed to read input");
+            
+                                value = match input.trim().parse() {
+                                    Ok(num) => num,
+                                    Err(_) => {
+                                        println!("    - Error: Invalid input, please type a number");
+                                        continue;
+                                    },
+                                };
+            
+                                println!("\n============================================= Info =============================================\n");
+            
+                                let existed = rootlink.clone().borrow().tree_search(&value);
+            
+                                if let Some(exist) = existed {
+                                    println!("    - Unable to insert the key value of {}", value);
+                                    println!("    - The node {:?} already existed", exist.clone().borrow().key);
+                                } else {
+                                    rootlink
+                                        .borrow_mut()
+                                        .tree_insert(&rootlink, &value);
+                                }
+                                
+                                println!("\n================================================================================================\n");
+            
+                                break;
+                            }
+            
+                            continue;
+                        },
+                        2 => {
+                            loop {
+                                println!("\n============================================ Delete ============================================\n");
+                                println!("    - Instruction: Please enter a key value of the node to delete");
+            
+                                let mut input = String::new();
+            
+                                io::stdin()
+                                    .read_line(&mut input)
+                                    .expect("    - Error: Failed to read input");
+            
+                                value = match input.trim().parse() {
+                                    Ok(num) => num,
+                                    Err(_) => {
+                                        println!("    - Error: Invalid input, please type a number");
+                                        continue;
+                                    },
+                                };
+            
+                                println!("\n============================================= Info =============================================\n");
+            
+                                rootlink
+                                    .borrow_mut()
+                                    .tree_delete(&value);
+            
+                                println!("\n================================================================================================\n");
+            
+                                break;
+                            }
+            
+                            continue;
+                        },
+                        3 => {
+                            loop {
+                                println!("\n====================================== Find the successor ======================================\n");
+                                println!("    - Instruction: Please enter a key value of the node in order to find its successor");
+            
+                                let mut input = String::new();
+            
+                                io::stdin()
+                                    .read_line(&mut input)
+                                    .expect("    - Error: Failed to read input");
+            
+                                value = match input.trim().parse() {
+                                    Ok(num) => num,
+                                    Err(_) => {
+                                        println!("    - Error: Invalid input, please type a number");
+                                        continue;
+                                    },
+                                };
+            
+                                println!("\n============================================= Info =============================================\n");
+            
+                                if let Some(node) = rootlink.borrow().tree_search(&value) {
+                                    BstNode::tree_successor(&node);
+                                } else {
+                                    println!("    - Node with key of {} does not exist, failed to get successor", value);
+                                }
+            
+                                println!("\n================================================================================================\n");
+            
+                                break;
+                            }
+            
+                            continue;
+                        },
+                        4 => {
+                            println!("\n============================================= Info =============================================\n");
+                            println!("    - The root node of the tree is {:?}", BstNode::get_root(&rootlink).borrow().key);
+                            println!("\n================================================================================================\n");
+            
+                            continue;
+                        },
+                        5 => {
+                            println!("\n============================================= Info =============================================\n");
+                            println!("    - The minimum node of the tree is {:?}", rootlink.borrow().minimum().borrow().key);
+                            println!("\n================================================================================================\n");
+                            
+                            continue;
+                        },
+                        6 => {
+                            println!("\n============================================= Info =============================================\n");
+                            println!("    - The maximum node of the tree is {:?}", rootlink.borrow().maximum().borrow().key);
+                            println!("\n================================================================================================\n");
+                            
+                            continue;
+                        },
+                        7 => {
+                            println!("\n============================================= Info =============================================\n");
+            
+                            let main_tree_path = "bst_graph.dot";
+                            generate_dotfile_bst(&rootlink, main_tree_path);
+            
+                            println!("    - The graph has been written to the file named with {:?}", main_tree_path);
+                            println!("\n================================================================================================\n");
+                            
+                            continue;
+                        },
+                        8 => {
+                            println!("Exited");
+                        }
+                        _ => {
+                            println!("    - Error: Invalid input, there's no option number {}", value);
+                            continue;
+                        }
+                    }
+            
+                    break;
+                }
+            },
+            2 => {
+                println!("    - Instruction: Please enter a key value of the root node");
+
+                loop {
+                    let mut input = String::new();
+            
+                    io::stdin()
+                        .read_line(&mut input)
+                        .expect("    - Error: Failed to read input");
+            
+                    value = match input.trim().parse() {
+                        Ok(num) => num,
+                        Err(_) => {
+                            println!("    - Error: Invalid input, please type a number");
+                            continue;
+                        },
+                    };
+            
+                    break;
+                }
+            
+                let rootlink= BstNode::new_bst_nodelink(value);
+            
+                println!("\n============================================= Info =============================================\n");
+                println!("    - The tree root with value {:?} is created successfully", rootlink.borrow().key);
+                println!("\n================================================================================================\n");
+
+                loop {
+                    println!("\n============================================= Menu =============================================\n");
+                    println!("    - Instruction: Please choose one of the following options provided by entering its number\n");
+                    println!("      1. Insert a new node");
+                    println!("      2. Delete a node");
+                    println!("      3. Find the successor of a node");
+                    println!("      4. Find the root node of the tree");
+                    println!("      5. Find the minimum node of the tree");
+                    println!("      6. Find the maximum node of the tree");
+                    println!("      7. Save the current graph");
+                    println!("      8. Exit the program");
+            
+                    let mut input = String::new();
+            
+                    io::stdin()
+                        .read_line(&mut input)
+                        .expect("    - Error: Failed to read input");
+            
+                    value = match input.trim().parse() {
+                        Ok(num) => num,
+                        Err(_) => {
+                            println!("    - Error: Invalid input, please type a number");
+                            continue;
+                        },
+                    };
+            
+                    match value {
+                        1 => {
+                            loop {
+                                println!("\n============================================ Insert ============================================\n");
+                                println!("    - Instruction: Please enter a key value of the new node");
+            
+                                let mut input = String::new();
+            
+                                io::stdin()
+                                    .read_line(&mut input)
+                                    .expect("    - Error: Failed to read input");
+            
+                                value = match input.trim().parse() {
+                                    Ok(num) => num,
+                                    Err(_) => {
+                                        println!("    - Error: Invalid input, please type a number");
+                                        continue;
+                                    },
+                                };
+            
+                                println!("\n============================================= Info =============================================\n");
+            
+                                let existed = rootlink.clone().borrow().tree_search(&value);
+            
+                                if let Some(exist) = existed {
+                                    println!("    - Unable to insert the key value of {}", value);
+                                    println!("    - The node {:?} already existed", exist.clone().borrow().key);
+                                } else {
+                                    rootlink
+                                        .borrow_mut()
+                                        .tree_insert(&rootlink, &value);
+                                }
+                                
+                                println!("\n================================================================================================\n");
+            
+                                break;
+                            }
+            
+                            continue;
+                        },
+                        2 => {
+                            loop {
+                                println!("\n============================================ Delete ============================================\n");
+                                println!("    - Instruction: Please enter a key value of the node to delete");
+            
+                                let mut input = String::new();
+            
+                                io::stdin()
+                                    .read_line(&mut input)
+                                    .expect("    - Error: Failed to read input");
+            
+                                value = match input.trim().parse() {
+                                    Ok(num) => num,
+                                    Err(_) => {
+                                        println!("    - Error: Invalid input, please type a number");
+                                        continue;
+                                    },
+                                };
+            
+                                println!("\n============================================= Info =============================================\n");
+            
+                                rootlink
+                                    .borrow_mut()
+                                    .tree_delete(&value);
+            
+                                println!("\n================================================================================================\n");
+            
+                                break;
+                            }
+            
+                            continue;
+                        },
+                        3 => {
+                            loop {
+                                println!("\n====================================== Find the successor ======================================\n");
+                                println!("    - Instruction: Please enter a key value of the node in order to find its successor");
+            
+                                let mut input = String::new();
+            
+                                io::stdin()
+                                    .read_line(&mut input)
+                                    .expect("    - Error: Failed to read input");
+            
+                                value = match input.trim().parse() {
+                                    Ok(num) => num,
+                                    Err(_) => {
+                                        println!("    - Error: Invalid input, please type a number");
+                                        continue;
+                                    },
+                                };
+            
+                                println!("\n============================================= Info =============================================\n");
+            
+                                if let Some(node) = rootlink.borrow().tree_search(&value) {
+                                    BstNode::tree_successor(&node);
+                                } else {
+                                    println!("    - Node with key of {} does not exist, failed to get successor", value);
+                                }
+            
+                                println!("\n================================================================================================\n");
+            
+                                break;
+                            }
+            
+                            continue;
+                        },
+                        4 => {
+                            println!("\n============================================= Info =============================================\n");
+                            println!("    - The root node of the tree is {:?}", BstNode::get_root(&rootlink).borrow().key);
+                            println!("\n================================================================================================\n");
+            
+                            continue;
+                        },
+                        5 => {
+                            println!("\n============================================= Info =============================================\n");
+                            println!("    - The minimum node of the tree is {:?}", rootlink.borrow().minimum().borrow().key);
+                            println!("\n================================================================================================\n");
+                            
+                            continue;
+                        },
+                        6 => {
+                            println!("\n============================================= Info =============================================\n");
+                            println!("    - The maximum node of the tree is {:?}", rootlink.borrow().maximum().borrow().key);
+                            println!("\n================================================================================================\n");
+                            
+                            continue;
+                        },
+                        7 => {
+                            println!("\n============================================= Info =============================================\n");
+            
+                            let main_tree_path = "bst_graph.dot";
+                            generate_dotfile_bst(&rootlink, main_tree_path);
+            
+                            println!("    - The graph has been written to the file named with {:?}", main_tree_path);
+                            println!("\n================================================================================================\n");
+                            
+                            continue;
+                        },
+                        8 => {
+                            println!("Exited");
+                        }
+                        _ => {
+                            println!("    - Error: Invalid input, there's no option number {}", value);
+                            continue;
+                        }
+                    }
+            
+                    break;
+                }
+            },
+            3 => {
+                println!("Exited");
+            },
+            _ => {
+                println!("    - Error: Invalid input, there's no option number {}", value);
+                continue;
+            }
+        }
+
+        break;
+    }
+}
+
+fn customized_debug() {
+    Builder::new()
+        .format(|buf, record| { writeln!(buf, "    {}", record.args()) })
+        .filter_level(log::LevelFilter::Debug)
+        .init();
+}
+
+#[allow(dead_code)]
 fn test_binary_search_tree(){
     let rootlink: BstNodeLink = BstNode::new_bst_nodelink(15);
     rootlink.borrow_mut().add_left_child(&rootlink, 6);
@@ -63,13 +509,13 @@ fn test_binary_search_tree(){
     generate_dotfile_bst(&rootlink, main_tree_path);
 
     //tree search test
-    let search_keys = vec![15, 9, 22];
+    let search_keys = vec![9, 21];
 
     for &key in search_keys.iter() {
-        print!("tree search result of key {} is ", key);
+        print!("tree search result of node with key of {} is ", key);
 
-        if let Some(node_result) = rootlink.borrow().tree_search(&key) {
-            println!("found -> {:?}", node_result.borrow().key);
+        if let Some(_node_result) = rootlink.borrow().tree_search(&key) {
+            println!("found");
         } else {
             println!("not found");
         }
@@ -77,39 +523,31 @@ fn test_binary_search_tree(){
 
     //min test
     let min_node = rootlink.borrow().minimum();
-    println!("minimum result {:?}", min_node.borrow().key);
+    println!("minimum node of the tree is {:?}", min_node.borrow().key);
 
     //max test
     let max_node = rootlink.borrow().maximum();
-    println!("maximum result {:?}", max_node.borrow().key);
+    println!("maximum node of the tree is {:?}", max_node.borrow().key);
 
     //root node get test
     let root_node = BstNode::get_root(&max_node);
-    println!("root node {:?}", root_node.borrow().key);
+    println!("root node of the tree is {:?}", root_node.borrow().key);
 
     //successor test
-    let query_keys = vec![
-        2, // min_node, should return its parent Some(3)
-        20, // max_node, should return None
-        15, // root_node, should return the minimum of its right tree
-        // test case for node with empty right child
-        // should return a parent of the node's ancestor if it's a left child of the parent
-        13,
-        9, 7, // other keys
-        22 // non-existent key
-    ];
-
-    for &key in query_keys.iter() {
+    for key in 1..=21 {
         if let Some(node) = rootlink.borrow().tree_search(&key) {
-            print!("successor of node ({}) is ", key);
+            println!("\n================ successor of node ({}) =================", key);
 
-            if let Some(successor) = BstNode::tree_successor_simpler(&node) {
-                println!("{:?}", successor.borrow().key);
+            if let Some(successor) = BstNode::tree_successor(&node) {
+                println!("============= so, the successor is {:?} =============", successor.borrow().key);
             } else {
-                println!("not found");
+                println!("============ so, the successor is not found =============");
             }
-        } else {
-            println!("node with key of {} does not exist, failed to get successor", key)
+        }
+
+        else {
+            // comment the line below to skip non-existent key, otherwise uncomment
+            println!("node with key of {} does not exist, failed to get successor", key);
         }
     }
 }
